@@ -1,0 +1,87 @@
+digraph CLASS {
+  graph [rankdir=LR, splines=true, nodesep=0.8, ranksep=1.5, bgcolor="#0b1020", fontname="Helvetica", pad=0.4,
+         label=<<font color="#e8edff" point-size="22"><b>Class Diagram — ASTRA OBSERVATORY (App\\Models)</b></font><br/><font color="#8f9cc6" point-size="13">Relasi Eloquent: belongsTo · hasOne · belongsToMany · hasMany  |  kardinalitas pada ujung garis</font>>, labelloc=t];
+  node  [shape=plain, fontname="Helvetica", fontcolor="#e8edff"];
+  edge  [color="#22d3ee", fontname="Helvetica", fontcolor="#cdd7ff", fontsize=12, penwidth=1.6, arrowhead=vee];
+
+  ObservationSession [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#22d3ee" bgcolor="#101c3a">
+      <tr><td bgcolor="#0891b2"><b>ObservationSession</b><br/><font point-size="10">table: observation_sessions</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- code : string (unique)<br/>- name : string<br/>- astronomical_object_id : int (FK)<br/>- observation_date : date<br/>- start_time : time<br/>- end_time : time<br/>- status : SessionStatus<br/>- description : text<br/>- notes : text</td></tr>
+      <tr><td align="left" balign="left">+ astronomicalObject() : BelongsTo<br/>+ locationDetail() : HasOne<br/>+ equipment() : BelongsToMany<br/>+ scopeSearch() / scopeFilter()</td></tr>
+    </table>>];
+
+  AstronomicalObject [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#8b5cf6" bgcolor="#141a3a">
+      <tr><td bgcolor="#8b5cf6"><b>AstronomicalObject</b><br/><font point-size="10">table: astronomical_objects</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- code : string (unique)<br/>- name : string<br/>- category : ObjectCategory<br/>- constellation : string<br/>- description : text<br/>- astronomical_info : text<br/>- image_url : string</td></tr>
+      <tr><td align="left" balign="left">+ sessions() : HasMany<br/>+ getImageSrcAttribute()<br/>+ scopeSearch() / scopeOfCategory()</td></tr>
+    </table>>];
+
+  SessionLocationDetail [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#3b82f6" bgcolor="#101c3a">
+      <tr><td bgcolor="#2563eb"><b>SessionLocationDetail</b><br/><font point-size="10">table: session_location_details</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- observation_session_id : int (FK, unique)<br/>- observation_location_id : int (FK)<br/>- weather_condition : string<br/>- visibility_condition : string<br/>- temperature : decimal<br/>- humidity : int<br/>- light_pollution_level : int<br/>- environment_notes : text</td></tr>
+      <tr><td align="left" balign="left">+ observationSession() : BelongsTo<br/>+ observationLocation() : BelongsTo</td></tr>
+    </table>>];
+
+  ObservationLocation [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#34d399" bgcolor="#0f2a2e">
+      <tr><td bgcolor="#059669"><b>ObservationLocation</b><br/><font point-size="10">table: observation_locations</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- code : string (unique)<br/>- name : string<br/>- country, province, city : string<br/>- latitude, longitude : decimal<br/>- elevation : int<br/>- sky_condition : string<br/>- light_pollution_level : int<br/>- description : text</td></tr>
+      <tr><td align="left" balign="left">+ sessionDetails() : HasMany<br/>+ getBortleLabelAttribute()<br/>+ scopeSearch()</td></tr>
+    </table>>];
+
+  Equipment [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#fbbf24" bgcolor="#2a2410">
+      <tr><td bgcolor="#b45309"><b>Equipment</b><br/><font point-size="10">table: equipment</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- code : string (unique)<br/>- name : string<br/>- equipment_category_id : int (FK)<br/>- brand, model : string<br/>- quantity : int<br/>- condition : EquipmentCondition<br/>- availability_status : EquipmentAvailability<br/>- description : text</td></tr>
+      <tr><td align="left" balign="left">+ category() : BelongsTo<br/>+ sessions() : BelongsToMany<br/>+ scopeSearch() / scopeFilter()</td></tr>
+    </table>>];
+
+  EquipmentCategory [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#fbbf24" bgcolor="#2a2410">
+      <tr><td bgcolor="#b45309"><b>EquipmentCategory</b><br/><font point-size="10">table: equipment_categories</font></td></tr>
+      <tr><td align="left" balign="left">- id : int (PK)<br/>- name : string (unique)<br/>- description : text</td></tr>
+      <tr><td align="left" balign="left">+ equipment() : HasMany</td></tr>
+    </table>>];
+
+  Pivot [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4" color="#ec4899" bgcolor="#2a1230">
+      <tr><td bgcolor="#be185d"><b>equipment_session</b><br/><font point-size="10">«association / pivot»</font></td></tr>
+      <tr><td align="left" balign="left">- observation_session_id : int (FK)<br/>- equipment_id : int (FK)<br/>- quantity_used : int<br/>- usage_notes : string<br/><font point-size="10">unique(session_id, equipment_id)</font></td></tr>
+    </table>>];
+
+  node [fontsize=11];
+  SessionStatus [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="3" color="#8f9cc6" bgcolor="#141a2e">
+      <tr><td><i>«enumeration»</i><br/><b>SessionStatus</b></td></tr>
+      <tr><td align="left" balign="left">Scheduled · Active<br/>Completed · Cancelled</td></tr></table>>];
+  ObjectCategory [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="3" color="#8f9cc6" bgcolor="#141a2e">
+      <tr><td><i>«enumeration»</i><br/><b>ObjectCategory</b></td></tr>
+      <tr><td align="left" balign="left">Planet · Star · Galaxy · Nebula<br/>NaturalSatellite · StarCluster<br/>Phenomenon</td></tr></table>>];
+  EquipmentCondition [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="3" color="#8f9cc6" bgcolor="#141a2e">
+      <tr><td><i>«enumeration»</i><br/><b>EquipmentCondition</b></td></tr>
+      <tr><td align="left" balign="left">Excellent · Good · Fair<br/>NeedsRepair</td></tr></table>>];
+  EquipmentAvailability [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="3" color="#8f9cc6" bgcolor="#141a2e">
+      <tr><td><i>«enumeration»</i><br/><b>EquipmentAvailability</b></td></tr>
+      <tr><td align="left" balign="left">Available · InUse<br/>Maintenance</td></tr></table>>];
+
+  // Relasi Eloquent
+  ObservationSession -> AstronomicalObject [taillabel="*", headlabel="1", label="belongsTo", labeldistance=2.2];
+  ObservationSession -> SessionLocationDetail [taillabel="1", headlabel="1", label="hasOne\n(One-to-One)", color="#fbbf24", fontcolor="#fbbf24", labeldistance=2.2];
+  SessionLocationDetail -> ObservationLocation [taillabel="*", headlabel="1", label="belongsTo", labeldistance=2.2];
+  ObservationSession -> Equipment [taillabel="*", headlabel="*", label="belongsToMany\n(Many-to-Many)", color="#ec4899", fontcolor="#ec4899", dir=both, arrowtail=vee, labeldistance=2.2];
+  Pivot -> ObservationSession [style=dashed, arrowhead=none, color="#ec4899", constraint=false];
+  Pivot -> Equipment [style=dashed, arrowhead=none, color="#ec4899", constraint=false];
+  Equipment -> EquipmentCategory [taillabel="*", headlabel="1", label="belongsTo", labeldistance=2.2];
+
+  edge [style=dotted, color="#8f9cc6", arrowhead=open, label="", taillabel="", headlabel=""];
+  ObservationSession -> SessionStatus [constraint=false];
+  AstronomicalObject -> ObjectCategory [constraint=false];
+  Equipment -> EquipmentCondition [constraint=false];
+  Equipment -> EquipmentAvailability [constraint=false];
+}

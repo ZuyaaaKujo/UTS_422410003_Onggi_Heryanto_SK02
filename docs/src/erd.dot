@@ -1,0 +1,110 @@
+digraph ERD {
+  graph [rankdir=LR, splines=ortho, nodesep=0.7, ranksep=1.3, bgcolor="#0b1020", fontname="Helvetica", pad=0.4,
+         label=<<font color="#e8edff" point-size="22"><b>ERD — ASTRA OBSERVATORY (SK02 Observatorium Langit Gelap)</b></font><br/><font color="#8f9cc6" point-size="13">PK = primary key · FK = foreign key · UQ = unique · notasi crow's foot</font>>, labelloc=t];
+  node  [shape=plain, fontname="Helvetica", fontcolor="#e8edff"];
+  edge  [color="#22d3ee", fontname="Helvetica", fontcolor="#cdd7ff", fontsize=12, penwidth=1.6, dir=both];
+
+  astronomical_objects [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#8b5cf6" bgcolor="#141a3a">
+      <tr><td colspan="3" bgcolor="#8b5cf6"><b>astronomical_objects</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">UQ</td><td align="left">code</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">name</td><td align="left">varchar(120)</td></tr>
+      <tr><td></td><td align="left">category</td><td align="left">varchar(30)</td></tr>
+      <tr><td></td><td align="left">constellation</td><td align="left">varchar(80) null</td></tr>
+      <tr><td></td><td align="left">description</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">astronomical_info</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">image_url</td><td align="left">varchar(500) null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  observation_sessions [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#22d3ee" bgcolor="#101c3a">
+      <tr><td colspan="3" bgcolor="#0891b2"><b>observation_sessions</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">UQ</td><td align="left">code</td><td align="left">varchar(30)</td></tr>
+      <tr><td></td><td align="left">name</td><td align="left">varchar(150)</td></tr>
+      <tr><td align="left">FK</td><td align="left">astronomical_object_id</td><td align="left">bigint</td></tr>
+      <tr><td></td><td align="left">observation_date</td><td align="left">date</td></tr>
+      <tr><td></td><td align="left">start_time / end_time</td><td align="left">time</td></tr>
+      <tr><td></td><td align="left">status</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">description / notes</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  session_location_details [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#3b82f6" bgcolor="#101c3a">
+      <tr><td colspan="3" bgcolor="#2563eb"><b>session_location_details</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">FK, UQ</td><td align="left">observation_session_id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">FK</td><td align="left">observation_location_id</td><td align="left">bigint</td></tr>
+      <tr><td></td><td align="left">weather_condition</td><td align="left">varchar(60)</td></tr>
+      <tr><td></td><td align="left">visibility_condition</td><td align="left">varchar(60)</td></tr>
+      <tr><td></td><td align="left">temperature</td><td align="left">decimal(4,1) null</td></tr>
+      <tr><td></td><td align="left">humidity</td><td align="left">tinyint null</td></tr>
+      <tr><td></td><td align="left">light_pollution_level</td><td align="left">tinyint null</td></tr>
+      <tr><td></td><td align="left">environment_notes</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  observation_locations [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#34d399" bgcolor="#0f2a2e">
+      <tr><td colspan="3" bgcolor="#059669"><b>observation_locations</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">UQ</td><td align="left">code</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">name</td><td align="left">varchar(150)</td></tr>
+      <tr><td></td><td align="left">country / province / city</td><td align="left">varchar</td></tr>
+      <tr><td></td><td align="left">latitude / longitude</td><td align="left">decimal(10,7)</td></tr>
+      <tr><td></td><td align="left">elevation</td><td align="left">int</td></tr>
+      <tr><td></td><td align="left">sky_condition</td><td align="left">varchar(60) null</td></tr>
+      <tr><td></td><td align="left">light_pollution_level</td><td align="left">tinyint (Bortle 1-9)</td></tr>
+      <tr><td></td><td align="left">description</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  equipment_session [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#ec4899" bgcolor="#2a1230">
+      <tr><td colspan="3" bgcolor="#be185d"><b>equipment_session</b> (pivot)</td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">FK, UQ*</td><td align="left">observation_session_id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">FK, UQ*</td><td align="left">equipment_id</td><td align="left">bigint</td></tr>
+      <tr><td></td><td align="left">quantity_used</td><td align="left">int unsigned</td></tr>
+      <tr><td></td><td align="left">usage_notes</td><td align="left">varchar(255) null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+      <tr><td colspan="3" align="left"><font point-size="10">* UNIQUE (observation_session_id, equipment_id)</font></td></tr>
+    </table>>];
+
+  equipment [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#fbbf24" bgcolor="#2a2410">
+      <tr><td colspan="3" bgcolor="#b45309"><b>equipment</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">UQ</td><td align="left">code</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">name</td><td align="left">varchar(150)</td></tr>
+      <tr><td align="left">FK</td><td align="left">equipment_category_id</td><td align="left">bigint</td></tr>
+      <tr><td></td><td align="left">brand / model</td><td align="left">varchar(80) null</td></tr>
+      <tr><td></td><td align="left">quantity</td><td align="left">int unsigned</td></tr>
+      <tr><td></td><td align="left">condition</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">availability_status</td><td align="left">varchar(20)</td></tr>
+      <tr><td></td><td align="left">description</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  equipment_categories [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#fbbf24" bgcolor="#2a2410">
+      <tr><td colspan="3" bgcolor="#b45309"><b>equipment_categories</b></td></tr>
+      <tr><td align="left">PK</td><td align="left">id</td><td align="left">bigint</td></tr>
+      <tr><td align="left">UQ</td><td align="left">name</td><td align="left">varchar(100)</td></tr>
+      <tr><td></td><td align="left">description</td><td align="left">text null</td></tr>
+      <tr><td></td><td align="left">created_at / updated_at</td><td align="left">timestamp</td></tr>
+    </table>>];
+
+  // 1 ── 0..*
+  astronomical_objects -> observation_sessions   [arrowtail=crowodot, arrowhead=teetee, label="  1 : N  "];
+  // 1 ── 1  (One-to-One)
+  observation_sessions -> session_location_details [arrowtail=teetee, arrowhead=teetee, label="  1 : 1  (One-to-One)  ", color="#fbbf24", fontcolor="#fbbf24"];
+  observation_locations -> session_location_details [arrowtail=crowodot, arrowhead=teetee, label="  1 : N  "];
+  // Many-to-Many via pivot
+  observation_sessions -> equipment_session [arrowtail=crowodot, arrowhead=teetee, label="  1 : N  ", color="#ec4899"];
+  equipment -> equipment_session [arrowtail=crowodot, arrowhead=teetee, label="  1 : N  ", color="#ec4899"];
+  equipment_categories -> equipment [arrowtail=crowodot, arrowhead=teetee, label="  1 : N  "];
+}
